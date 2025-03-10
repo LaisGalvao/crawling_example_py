@@ -14,7 +14,7 @@ options.add_argument("--headless")  # Executar em modo headless (sem interface g
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
 # URL da página
-url = "https://app.powerbi.com/view?r=eyJrIjoiZmU3NDAwZDAtNGIzZi00YjhkLWEzNmYtODdkNjZjNjhiZDBiIiwidCI6IjI2OTQyYmU5LThiODMtNGI1OC04OTBmLWQ5NGJkNDAwNzhlMiJ9"
+url = "SUA_URL_AQUI"
 
 # Acessando a URL
 driver.get(url)
