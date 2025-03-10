@@ -1,7 +1,7 @@
 import requests
 import pandas as pd
 
-base_url = "https://clubecasadesign.com.br/api/stores?search=&page="  # Substitua pela URL real
+base_url = "url"  # Substitua pela URL real
 page = 1
 has_next_page = True
 all_data = []
