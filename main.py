@@ -1,46 +1,51 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
 import pandas as pd
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import time
 
-# Configurar o WebDriver (Chrome)
+# Configuração do WebDriver (Chrome)
 options = webdriver.ChromeOptions()
 options.add_argument("--start-maximized")
-driver = webdriver.Chrome(options=options)
+options.add_argument("--disable-blink-features=AutomationControlled")
+options.add_argument("--headless")  # Executar em modo headless (sem interface gráfica)
+
+# Inicializando o WebDriver
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
 # URL da dashboard do Power BI
-url = "https://app.powerbi.com/view?r=XXXXX"  # Substitua pelo link real
+url = "https://app.powerbi.com/view?r=eyJrIjoiZmU3NDAwZDAtNGIzZi00YjhkLWEzNmYtODdkNjZjNjhiZDBiIiwidCI6IjI2OTQyYmU5LThiODMtNGI1OC04OTBmLWQ5NGJkNDAwNzhlMiJ9"
+
+# Acessando a URL
 driver.get(url)
 
-# 🔹 Aguarde o carregamento da página
-time.sleep(5)
-
-# 🔹 Localizar a tabela (Ajuste conforme necessário)
+# Aguardar até que os visuais estejam presentes na página
 try:
-    tabela = driver.find_element(By.CLASS_NAME, "visual-container")  # Ajuste para a classe correta da tabela
-    
-    # Extrair todas as linhas
-    linhas = tabela.find_elements(By.TAG_NAME, "tr")
-    
-    # Extrair cabeçalhos (primeira linha)
-    cabecalhos = [th.text for th in linhas[0].find_elements(By.TAG_NAME, "th")]
+    visuais = WebDriverWait(driver, 30).until(
+        EC.presence_of_all_elements_located((By.CLASS_NAME, "visualContainer"))
+    )
 
-    # Extrair dados das linhas seguintes
-    dados = []
-    for linha in linhas[1:]:  # Pular a primeira linha (cabeçalhos)
-        colunas = linha.find_elements(By.TAG_NAME, "td")
-        dados.append([coluna.text for coluna in colunas])
+    # Extrair os dados de cada visual (Exemplo)
+    data = []
+    for visual in visuais:
+        # Aqui você pode adicionar a extração dos dados que você deseja do visual
+        # Exemplo fictício: data.append({"id": visual.get_attribute("id"), "texto": visual.text})
+        data.append({"id": visual.get_attribute("id"), "texto": visual.text})
 
-    # Criar DataFrame do Pandas
-    df = pd.DataFrame(dados, columns=cabecalhos)
+    # Criar um DataFrame do pandas
+    df = pd.DataFrame(data)
 
-    # Salvar em Excel com cabeçalhos
-    df.to_excel("dados_dash.xlsx", index=False)
+    # Salvar no Excel na raiz do projeto
+    file_path = "dados_extraidos.xlsx"  # Caminho do arquivo Excel
+    df.to_excel(file_path, index=False)
 
-    print("📊 Dados extraídos e salvos em 'dados_dash.xlsx' com sucesso!")
+    print(f"📊 Dados extraídos e salvos com sucesso em {file_path}")
 
 except Exception as e:
-    print("❌ Erro ao extrair tabela:", e)
+    print(f"❌ Erro ao extrair dados: {e}")
 
-# 🔹 Fechar navegador
+# Fechar o navegador
 driver.quit()
