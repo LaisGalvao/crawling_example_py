@@ -1,13 +1,13 @@
 import requests
 import pandas as pd
 
-base_url = "https://clubecasadesign.com.br/api/stores"  # Substitua pela URL real
+base_url = "https://clubecasadesign.com.br/api/stores?search=&"  # Substitua pela URL real
 page = 1
 has_next_page = True
 all_data = []
 
 while has_next_page:
-    url = f"{base_url}?page={page}"
+    url = f"{base_url}page={page}"
     response = requests.get(url)
     
     if response.status_code == 200:
